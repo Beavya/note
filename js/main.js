@@ -72,6 +72,7 @@ Vue.component('note-card', {
                             type="checkbox" 
                             :checked="item.completed"
                             @change="toggleItem(index)"
+                            :disabled="item.completed"
                         >
                         {{ item.text }}
                     </label>
