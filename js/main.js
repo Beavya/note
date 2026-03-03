@@ -5,22 +5,22 @@ Vue.component('add-note-form', {
         <form class="add-note-form" @submit.prevent="onSubmit">
             <div>
                 <label for="title">Note Title:</label>
-                <input id="title" v-model="title">
+                <input id="title" v-model="title" required>
             </div>
             
             <div>
                 <label for="item1">Item 1:</label>
-                <input id="item1" v-model="item1">
+                <input id="item1" v-model="item1" required>
             </div>
             
             <div>
                 <label for="item2">Item 2:</label>
-                <input id="item2" v-model="item2">
+                <input id="item2" v-model="item2" required>
             </div>
             
             <div>
                 <label for="item3">Item 3:</label>
-                <input id="item3" v-model="item3">
+                <input id="item3" v-model="item3" required>
             </div>
             
             <button type="submit">Create Note</button>
