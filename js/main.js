@@ -129,6 +129,9 @@ Vue.component('notes', {
                 if (note.columnId === 1 && percent > 50) {
                     note.columnId = 2
                 }
+                else if (note.columnId === 2 && percent === 100) {
+                    note.columnId = 3
+                }
             }
         }
     }
