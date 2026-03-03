@@ -77,6 +77,9 @@ Vue.component('note-card', {
                     </label>
                 </li>
             </ul>
+            <div v-if="note.completedAt" class="completed-date">
+                <p>Completed: {{ formatDate(note.completedAt) }}</p>
+            </div>
         </div>
     `,
     methods: {
@@ -85,6 +88,9 @@ Vue.component('note-card', {
                 noteId: this.note.id,
                 itemIndex: index
             })
+        },
+        formatDate(timestamp) {
+            return new Date(timestamp).toLocaleString()
         }
     }
 })
@@ -131,6 +137,7 @@ Vue.component('notes', {
                 }
                 else if (note.columnId === 2 && percent === 100) {
                     note.columnId = 3
+                    note.completedAt = Date.now()
                 }
             }
         }
@@ -172,7 +179,8 @@ let app = new Vue({
                 id: this.allNotes.length + 1,
                 title: newNote.title,
                 items: newNote.items,
-                columnId: 1
+                columnId: 1,
+                completedAt: null
             })
         })
     }

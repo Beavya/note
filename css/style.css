@@ -111,3 +111,8 @@ h1 {
 .items-list input[type="checkbox"] {
     cursor: pointer;
 }
+
+.completed-date {
+    font-size: 12px;
+    color: #666
+}
