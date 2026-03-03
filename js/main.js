@@ -94,11 +94,10 @@ Vue.component('notes', {
         columnId: {
             type: Number,
             required: true
-        }
-    },
-    data() {
-        return {
-            notes: []
+        },
+        allNotes: {
+            type: Array,
+            required: true
         }
     },
     template: `
@@ -113,26 +112,25 @@ Vue.component('notes', {
     `,
     computed: {
         filteredNotes() {
-            return this.notes.filter(note => note.columnId === this.columnId)
+            return this.allNotes.filter(note => note.columnId === this.columnId)
         }
     },
     methods: {
         handleItemToggle(event) {
-            const note = this.notes.find(n => n.id === event.noteId)
+            const note = this.allNotes.find(n => n.id === event.noteId)
+            
             if (note) {
                 note.items[event.itemIndex].completed = !note.items[event.itemIndex].completed
+
+                const completedCount = note.items.filter(item => item.completed).length
+                const totalCount = note.items.length
+                const percent = (completedCount / totalCount) * 100
+                
+                if (note.columnId === 1 && percent > 50) {
+                    note.columnId = 2
+                }
             }
         }
-    },
-    mounted() {
-        eventBus.$on('note-created', (newNote) => {
-            this.notes.push({
-                id: this.notes.length + 1,
-                title: newNote.title,
-                items: newNote.items,
-                columnId: 1
-            })
-        })
     }
 })
 
@@ -141,12 +139,16 @@ Vue.component('column', {
         column: {
             type: Object,
             required: true
+        },
+        allNotes: {
+            type: Array,
+            required: true
         }
     },
     template: `
         <div class="column">
             <h2>{{ column.title }}</h2>
-            <notes :column-id="column.id"></notes>
+            <notes :column-id="column.id" :all-notes="allNotes"></notes>
         </div>
     `
 })
@@ -158,6 +160,17 @@ let app = new Vue({
             { id: 1, title: 'To Do (max 3)', limit: 3 },
             { id: 2, title: 'In Progress (max 5)', limit: 5 },
             { id: 3, title: 'Done (unlimited)', limit: null }
-        ]
+        ],
+        allNotes: []
+    },
+    mounted() {
+        eventBus.$on('note-created', (newNote) => {
+            this.allNotes.push({
+                id: this.allNotes.length + 1,
+                title: newNote.title,
+                items: newNote.items,
+                columnId: 1
+            })
+        })
     }
 })
