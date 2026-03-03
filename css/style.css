@@ -1,0 +1,40 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+#app {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    padding-bottom: 30px;
+}
+
+.columns-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.column {
+    background-color: #ebecf0;
+    border-radius: 20px;
+    padding: 15px;
+    width: 300px;
+    min-height: 400px;
+}
+
+.column h2 {
+    font-size: 18px;
+    padding-bottom: 15px;
+    text-align: center;
+}
