@@ -5,22 +5,22 @@ Vue.component('add-note-form', {
         <form class="add-note-form" @submit.prevent="onSubmit">
             <div>
                 <label for="title">Note Title:</label>
-                <input id="title" v-model="title" placeholder="title">
+                <input id="title" v-model="title">
             </div>
             
             <div>
                 <label for="item1">Item 1:</label>
-                <input id="item1" v-model="item1" placeholder="item 1">
+                <input id="item1" v-model="item1">
             </div>
             
             <div>
                 <label for="item2">Item 2:</label>
-                <input id="item2" v-model="item2" placeholder="item 2">
+                <input id="item2" v-model="item2">
             </div>
             
             <div>
                 <label for="item3">Item 3:</label>
-                <input id="item3" v-model="item3" placeholder="item 3">
+                <input id="item3" v-model="item3">
             </div>
             
             <button type="submit">Create Note</button>
@@ -65,11 +65,28 @@ Vue.component('note-card', {
     template: `
         <div class="note-card">
             <h3>{{ note.title }}</h3>
-            <ul>
-                <li v-for="item in note.items">{{ item.text }}</li>
+            <ul class="items-list">
+                <li v-for="(item, index) in note.items" :key="index">
+                    <label>
+                        <input 
+                            type="checkbox" 
+                            :checked="item.completed"
+                            @change="toggleItem(index)"
+                        >
+                        {{ item.text }}
+                    </label>
+                </li>
             </ul>
         </div>
-    `
+    `,
+    methods: {
+        toggleItem(index) {
+            this.$emit('item-toggled', {
+                noteId: this.note.id,
+                itemIndex: index
+            })
+        }
+    }
 })
 
 Vue.component('notes', {
@@ -90,12 +107,21 @@ Vue.component('notes', {
                 v-for="note in filteredNotes" 
                 :key="note.id"
                 :note="note"
+                @item-toggled="handleItemToggle"
             ></note-card>
         </div>
     `,
     computed: {
         filteredNotes() {
             return this.notes.filter(note => note.columnId === this.columnId)
+        }
+    },
+    methods: {
+        handleItemToggle(event) {
+            const note = this.notes.find(n => n.id === event.noteId)
+            if (note) {
+                note.items[event.itemIndex].completed = !note.items[event.itemIndex].completed
+            }
         }
     },
     mounted() {

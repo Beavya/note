@@ -92,3 +92,22 @@ h1 {
 .add-note-form button:hover {
     background-color: #3e4142;
 }
+
+.items-list {
+    list-style: none;
+}
+
+.items-list li {
+    margin-bottom: 5px;
+}
+
+.items-list label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.items-list input[type="checkbox"] {
+    cursor: pointer;
+}
