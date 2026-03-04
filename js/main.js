@@ -60,10 +60,14 @@ Vue.component('note-card', {
         note: {
             type: Object,
             required: true
+        },
+        isBlocked: {
+            type: Boolean,
+            default: false
         }
     },
     template: `
-        <div class="note-card">
+        <div class="note-card" :class="{ blocked: isBlocked }">
             <h3>{{ note.title }}</h3>
             <ul class="items-list">
                 <li v-for="(item, index) in note.items" :key="index">
@@ -72,7 +76,7 @@ Vue.component('note-card', {
                             type="checkbox" 
                             :checked="item.completed"
                             @change="toggleItem(index)"
-                            :disabled="item.completed"
+                            :disabled="item.completed || isBlocked"
                         >
                         {{ item.text }}
                     </label>
@@ -85,6 +89,7 @@ Vue.component('note-card', {
     `,
     methods: {
         toggleItem(index) {
+            if (this.isBlocked) return
             this.$emit('item-toggled', {
                 noteId: this.note.id,
                 itemIndex: index
@@ -105,14 +110,25 @@ Vue.component('notes', {
         allNotes: {
             type: Array,
             required: true
+        },
+        columnLimit: {
+            type: Number,
+            default: null
         }
     },
     template: `
         <div class="notes-container">
+            <div v-if="isFull" class="column-message">
+                <p>Column is full (max {{ columnLimit }} notes)</p> 
+            </div>
+            <div v-if="isColumnBlocked" class="column-message">
+                <p>First column blocked - second column is full</p>
+            </div>
             <note-card 
                 v-for="note in filteredNotes" 
                 :key="note.id"
                 :note="note"
+                :is-blocked="isColumnBlocked"
                 @item-toggled="handleItemToggle"
             ></note-card>
         </div>
@@ -120,6 +136,30 @@ Vue.component('notes', {
     computed: {
         filteredNotes() {
             return this.allNotes.filter(note => note.columnId === this.columnId)
+        },
+        isFull() {
+            if (!this.columnLimit) return false
+            return this.filteredNotes.length >= this.columnLimit
+        },
+        isColumnBlocked() {
+            if (this.columnId !== 1) return false
+            
+            const column2Notes = this.allNotes.filter(n => n.columnId === 2).length
+            
+            if (column2Notes >= 5) {
+                let hasProgressOver50 = false
+                
+                this.filteredNotes.forEach(note => {
+                    const completed = note.items.filter(i => i.completed).length
+                    const percent = (completed / note.items.length) * 100
+                    if (percent > 50) {
+                        hasProgressOver50 = true
+                    }
+                })
+                
+                return hasProgressOver50
+            }
+            return false
         }
     },
     methods: {
@@ -134,7 +174,10 @@ Vue.component('notes', {
                 const percent = (completedCount / totalCount) * 100
                 
                 if (note.columnId === 1 && percent > 50) {
-                    note.columnId = 2
+                    const column2Notes = this.allNotes.filter(n => n.columnId === 2).length
+                    if (column2Notes < 5) {
+                        note.columnId = 2
+                    }
                 }
                 else if (note.columnId === 2 && percent === 100) {
                     note.columnId = 3
@@ -159,7 +202,7 @@ Vue.component('column', {
     template: `
         <div class="column">
             <h2>{{ column.title }}</h2>
-            <notes :column-id="column.id" :all-notes="allNotes"></notes>
+            <notes :column-id="column.id" :all-notes="allNotes" :column-limit="column.limit"></notes>
         </div>
     `
 })

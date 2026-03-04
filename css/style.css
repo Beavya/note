@@ -1,3 +1,12 @@
+
+:root{
+    --white : #fff;
+    --green: #36b320;
+    --red: #b32020;
+    --light-grey: #ebecf0;
+    --grey: #666;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -26,7 +35,7 @@ h1 {
 }
 
 .column {
-    background-color: #ebecf0;
+    background-color: var(--light-grey);
     border-radius: 20px;
     padding: 15px;
     width: 300px;
@@ -40,7 +49,7 @@ h1 {
 }
 
 .note-card {
-    background-color: white;
+    background-color: var(--white);
     border-radius: 10px;
     padding: 12px;
     margin-bottom: 10px;
@@ -57,7 +66,7 @@ h1 {
 
 .note-card li {
     font-size: 14px;
-    color: #666;
+    color: var(--grey);
     padding: 4px 0;
 }
 
@@ -65,7 +74,7 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background-color: #ebecf0;
+    background-color: var(--light-grey);
     border-radius: 20px;
     padding: 15px;
     margin-bottom: 30px;
@@ -75,13 +84,13 @@ h1 {
 .add-note-form input {
     width: 100%;
     padding: 5px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--light-grey);
     border-radius: 8px;
 }
 
 .add-note-form button {
-    background-color: #666;
-    color: white;
+    background-color: var(--grey);
+    color: var(--white);
     border: none;
     border-radius: 10px;
     font-size: 16px;
@@ -114,5 +123,11 @@ h1 {
 
 .completed-date {
     font-size: 12px;
-    color: #666
+     color: var(--green)
+}
+
+.column-message {
+    color: var(--red);
+    font-size: 13px;
+    padding-bottom: 10px
 }
