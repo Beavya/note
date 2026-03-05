@@ -149,13 +149,15 @@ Vue.component('notes', {
             if (column2Notes >= 5) {
                 let hasProgressOver50 = false
                 
-                this.filteredNotes.forEach(note => {
+                for (let i = 0; i < this.filteredNotes.length; i++) {
+                    const note = this.filteredNotes[i]
                     const completed = note.items.filter(i => i.completed).length
                     const percent = (completed / note.items.length) * 100
                     if (percent > 50) {
                         hasProgressOver50 = true
+                        break
                     }
-                })
+                }
                 
                 return hasProgressOver50
             }
@@ -163,25 +165,43 @@ Vue.component('notes', {
         }
     },
     methods: {
+        checkAndMoveNote(note) {
+            const completedCount = note.items.filter(item => item.completed).length
+            const percent = (completedCount / note.items.length) * 100
+            
+            if (note.columnId === 1 && percent > 50) {
+                const column2Notes = this.allNotes.filter(n => n.columnId === 2).length
+                if (column2Notes < 5) {
+                    note.columnId = 2
+                    this.$root.saveToLocalStorage()
+                }
+            }
+            else if (note.columnId === 2 && percent === 100) {
+                note.columnId = 3
+                note.completedAt = Date.now()
+                this.$root.saveToLocalStorage()
+            }
+        },
+        
         handleItemToggle(event) {
             const note = this.allNotes.find(n => n.id === event.noteId)
             
             if (note) {
                 note.items[event.itemIndex].completed = !note.items[event.itemIndex].completed
-
-                const completedCount = note.items.filter(item => item.completed).length
-                const totalCount = note.items.length
-                const percent = (completedCount / totalCount) * 100
-                
-                if (note.columnId === 1 && percent > 50) {
-                    const column2Notes = this.allNotes.filter(n => n.columnId === 2).length
-                    if (column2Notes < 5) {
-                        note.columnId = 2
+                this.checkAndMoveNote(note)
+                this.$root.saveToLocalStorage()
+            }
+        }
+    },
+    watch: {
+        allNotes: {
+            deep: true,
+            handler() {
+                if (this.columnId === 1) {
+                    for (let i = 0; i < this.filteredNotes.length; i++) {
+                        const note = this.filteredNotes[i]
+                        this.checkAndMoveNote(note)
                     }
-                }
-                else if (note.columnId === 2 && percent === 100) {
-                    note.columnId = 3
-                    note.completedAt = Date.now()
                 }
             }
         }
@@ -217,7 +237,21 @@ let app = new Vue({
         ],
         allNotes: []
     },
+    methods: {
+        saveToLocalStorage() {
+            localStorage.setItem('notes-app', JSON.stringify(this.allNotes))
+        },
+        
+        loadFromLocalStorage() {
+            const saved = localStorage.getItem('notes-app')
+            if (saved) {
+                this.allNotes = JSON.parse(saved)
+            }
+        }
+    },
     mounted() {
+        this.loadFromLocalStorage()
+        
         eventBus.$on('note-created', (newNote) => {
             this.allNotes.push({
                 id: this.allNotes.length + 1,
@@ -226,6 +260,7 @@ let app = new Vue({
                 columnId: 1,
                 completedAt: null
             })
+            this.saveToLocalStorage()
         })
     }
 })
