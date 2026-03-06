@@ -8,19 +8,24 @@ Vue.component('add-note-form', {
                 <input id="title" v-model="title" required>
             </div>
             
-            <div>
-                <label for="item1">Item 1:</label>
-                <input id="item1" v-model="item1" required>
+            <div v-for="(item, index) in items" :key="index">
+                <label :for="'item' + index">Item {{ index + 1 }}:</label>
+                <input 
+                    :id="'item' + index" 
+                    v-model="item.text" 
+                    required
+                >
             </div>
             
-            <div>
-                <label for="item2">Item 2:</label>
-                <input id="item2" v-model="item2" required>
-            </div>
-            
-            <div>
-                <label for="item3">Item 3:</label>
-                <input id="item3" v-model="item3" required>
+            <div class="form-buttons">
+                <button 
+                    type="button" 
+                    @click="addItem" 
+                    v-if="items.length < 5"
+                    class="add-item-btn"
+                >
+                    Add Item
+                </button>
             </div>
             
             <button type="submit">Create Note</button>
@@ -29,28 +34,36 @@ Vue.component('add-note-form', {
     data() {
         return {
             title: null,
-            item1: null,
-            item2: null,
-            item3: null
+            items: [
+                { text: null },
+                { text: null },
+                { text: null }
+            ]
         }
     },
     methods: {
+        addItem() {
+            if (this.items.length < 5) {
+                this.items.push({ text: null })
+            }
+        },
         onSubmit() {
             let newNote = {
                 title: this.title,
-                items: [
-                    { text: this.item1, completed: false },
-                    { text: this.item2, completed: false },
-                    { text: this.item3, completed: false }
-                ]
+                items: this.items.map(item => ({
+                    text: item.text,
+                    completed: false
+                }))
             }
             
             eventBus.$emit('note-created', newNote)
             
             this.title = null
-            this.item1 = null
-            this.item2 = null
-            this.item3 = null
+            this.items = [
+                { text: null },
+                { text: null },
+                { text: null }
+            ]
         }
     }
 })
