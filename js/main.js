@@ -8,16 +8,24 @@ Vue.component('add-note-form', {
                 <input id="title" v-model="title" required>
             </div>
             
-            <div v-for="(item, index) in items" :key="index">
+            <div v-for="(item, index) in items" :key="index" class="item-row">
                 <label :for="'item' + index">Item {{ index + 1 }}:</label>
-                <input 
-                    :id="'item' + index" 
-                    v-model="item.text" 
-                    required
-                >
+                <div class="item-input-group">
+                    <input 
+                        :id="'item' + index" 
+                        v-model="item.text" 
+                        required
+                    >
+                    <button 
+                        v-if="index >= 3" 
+                        type="button" 
+                        @click="removeItem(index)"
+                        class="remove-btn"
+                    >Delite</button>
+                </div>
             </div>
             
-            <div class="form-buttons">
+            <div>
                 <button 
                     type="button" 
                     @click="addItem" 
@@ -45,6 +53,11 @@ Vue.component('add-note-form', {
         addItem() {
             if (this.items.length < 5) {
                 this.items.push({ text: null })
+            }
+        },
+        removeItem(index) {
+            if (index >= 3) {
+                this.items.splice(index, 1)
             }
         },
         onSubmit() {
