@@ -195,7 +195,7 @@ Vue.component('notes', {
             const completedCount = note.items.filter(item => item.completed).length
             const percent = (completedCount / note.items.length) * 100
             
-            if (note.columnId === 1 && percent > 50) {
+            if (note.columnId === 1 && percent >= 50) {
                 const column2Notes = this.allNotes.filter(n => n.columnId === 2).length
                 if (column2Notes < 5) {
                     note.columnId = 2
