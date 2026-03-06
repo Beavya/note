@@ -249,18 +249,24 @@ let app = new Vue({
             }
         }
     },
-    mounted() {
-        this.loadFromLocalStorage()
+mounted() {
+    this.loadFromLocalStorage()
+    
+    eventBus.$on('note-created', (newNote) => {
+        const column1Notes = this.allNotes.filter(note => note.columnId === 1).length
         
-        eventBus.$on('note-created', (newNote) => {
-            this.allNotes.push({
-                id: this.allNotes.length + 1,
-                title: newNote.title,
-                items: newNote.items,
-                columnId: 1,
-                completedAt: null
-            })
-            this.saveToLocalStorage()
+        if (column1Notes >= 3) {
+            return
+        }
+        
+        this.allNotes.push({
+            id: this.allNotes.length + 1,
+            title: newNote.title,
+            items: newNote.items,
+            columnId: 1,
+            completedAt: null
         })
-    }
+        this.saveToLocalStorage()
+    })
+}
 })
